@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { LoginPage } from '../pages/LoginPage';
-import { DashboardPage } from '../pages/DashboardPage';
+import DashboardPage from '../pages/DashboardPage';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 
 export default function App() {
