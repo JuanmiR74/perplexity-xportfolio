@@ -1,15 +1,16 @@
-export type ContractMode = 'individual' | 'roboadvisor';
-export type PriceStatus = 'fresh' | 'recent' | 'stale' | 'unavailable';
+export type PriceStatus = 'available' | 'unavailable' | 'stale' | 'unknown';
 
-export type AllocationItem = {
-  category: string;
-  weightPct: number;
+export type ContractMode = 'individual' | 'joint' | 'company';
+
+export type XRaySlice = {
+  name: string;
+  weight: number;
 };
 
 export type ThreeDimensionalClassification = {
-  assetType: AllocationItem[];
-  sectors: AllocationItem[];
-  geography: AllocationItem[];
+  assetType: XRaySlice[];
+  sectors: XRaySlice[];
+  geography: XRaySlice[];
 };
 
 export type FundPosition = {
@@ -20,7 +21,7 @@ export type FundPosition = {
   managementCompany: string | null;
   platformEntity: string;
   contractMode: ContractMode;
-  roboAdvisorId?: string | null;
+  roboAdvisorId: string | null;
   shares: number;
   investedAmount: number;
   latestNav: number | null;
@@ -31,15 +32,14 @@ export type FundPosition = {
   priceStatus: PriceStatus;
   priceSource: string | null;
   xray: ThreeDimensionalClassification;
-  metadata?: Record<string, unknown>;
+  metadata: Record<string, unknown>;
 };
 
 export type RoboSubFund = {
-  isin: string;
-  fundName?: string;
-  shares?: number;
-  weightPct?: number;
-  xray?: ThreeDimensionalClassification;
+  isin?: string;
+  name: string;
+  weight?: number;
+  amount?: number;
 };
 
 export type RoboAdvisor = {
@@ -51,4 +51,14 @@ export type RoboAdvisor = {
   totalValue: number;
   lastUpdated: string | null;
   subFunds: RoboSubFund[];
+};
+
+export type PortfolioSummary = {
+  investedTotal: number;
+  marketValueTotal: number;
+  gainLoss: number;
+  gainLossPct: number | null;
+  fundsCount: number;
+  unavailableCount: number;
+  lastUpdated: string | null;
 };
