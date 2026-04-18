@@ -14,8 +14,8 @@ export function RoboAdvisorForm() {
 
     try {
       await addRobo.mutateAsync({
-        name,
-        entity,
+        name: name.trim(),
+        entity: entity.trim(),
         investedValue: Number(investedValue),
         totalValue: Number(totalValue),
         lastUpdated: null,
@@ -35,17 +35,27 @@ export function RoboAdvisorForm() {
   return (
     <form className="form-grid" onSubmit={handleSubmit}>
       <label>
-        <span>Nombre del roboadvisor</span>
-        <input value={name} onChange={(e) => setName(e.target.value)} required />
+        <span>Nombre</span>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="MyInvestor Metal"
+          required
+        />
       </label>
 
       <label>
         <span>Entidad</span>
-        <input value={entity} onChange={(e) => setEntity(e.target.value)} required />
+        <input
+          value={entity}
+          onChange={(e) => setEntity(e.target.value)}
+          placeholder="MyInvestor"
+          required
+        />
       </label>
 
       <label>
-        <span>Valor aportado</span>
+        <span>Invertido</span>
         <input
           type="number"
           step="0.01"
@@ -67,7 +77,7 @@ export function RoboAdvisorForm() {
       </label>
 
       <div className="form-actions">
-        <button className="btn btn-secondary" type="submit" disabled={addRobo.isPending}>
+        <button className="btn btn-primary" type="submit" disabled={addRobo.isPending}>
           {addRobo.isPending ? 'Guardando...' : 'Guardar roboadvisor'}
         </button>
       </div>
