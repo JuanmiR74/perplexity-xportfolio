@@ -1,72 +1,18 @@
-import React, { createContext, useEffect, useMemo, useState } from 'react';
-import type { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
-import { supabase } from '../client';
+import { createClient } from '@supabase/supabase-js';
 
-type AuthContextType = {
-  user: User | null;
-  session: Session | null;
-  loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ user: User | null; error: string | null }>;
-  signIn: (email: string, password: string) => Promise<{ user: User | null; error: string | null }>;
-  signOut: () => Promise<void>;
-};
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const init = async () => {
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error) {
-        setSession(null);
-        setUser(null);
-      } else {
-        setSession(data.session ?? null);
-        setUser(data.session?.user ?? null);
-      }
-
-      setLoading(false);
-    };
-
-    init();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      (_event: AuthChangeEvent, session: Session | null) => {
-        setSession(session ?? null);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const value = useMemo<AuthContextType>(
-    () => ({
-      user,
-      session,
-      loading,
-      signUp: async (email, password) => {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        return { user: data.user ?? null, error: error?.message ?? null };
-      },
-      signIn: async (email, password) => {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        return { user: data.user ?? null, error: error?.message ?? null };
-      },
-      signOut: async () => {
-        await supabase.auth.signOut();
-      },
-    }),
-    [user, session, loading]
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error(
+    'Missing Supabase environment variables. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.'
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
