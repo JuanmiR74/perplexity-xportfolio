@@ -1,83 +1,104 @@
+import { useMemo } from 'react';
 import { toast } from 'sonner';
 import { usePortfolio } from '../../hooks/usePortfolio';
 import { formatCurrency, formatPercent } from '../../lib/utils';
-import { FundForm } from './FundForm';
-import { RoboAdvisorForm } from '../robo/RoboAdvisorForm';
 
 export function FundsTable() {
-  const { data, refreshMany } = usePortfolio();
+  const { data, isLoading, refreshMany } = usePortfolio();
 
-  const handleRefreshAll = async () => {
-    const isins = data?.funds.map((fund) => fund.isin) ?? [];
-    if (!isins.length) return toast.info('No hay fondos que refrescar');
+  const refreshableIsins = useMemo(
+    () =>
+      (data?.funds ?? [])
+        .map((fund) => fund.isin)
+        .filter((isin): isin is string => Boolean(isin)),
+    [data?.funds]
+  );
+
+  const handleRefresh = async () => {
+    if (!refreshableIsins.length) {
+      toast.message('No hay ISIN para refrescar');
+      return;
+    }
 
     try {
-      await refreshMany.mutateAsync(isins);
+      await refreshMany.mutateAsync(refreshableIsins);
       toast.success('Refresco lanzado');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'No se pudo refrescar');
+      toast.error(error instanceof Error ? error.message : 'Error al refrescar');
     }
   };
 
-  return (
-    <div className="table-wrap">
-      <div className="stack-block">
-        <FundForm />
-        <RoboAdvisorForm />
-      </div>
+  if (isLoading) {
+    return <div className="panel">Cargando fondos...</div>;
+  }
 
-      <div className="toolbar">
+  return (
+    <section className="panel">
+      <div className="panel-header">
+        <div>
+          <h2>Fondos</h2>
+          <p>Posiciones manuales del usuario autenticado.</p>
+        </div>
+
         <button
-          className="btn btn-ghost"
-          onClick={() => void handleRefreshAll()}
+          className="btn btn-secondary"
+          onClick={handleRefresh}
           disabled={refreshMany.isPending}
+          type="button"
         >
-          Refrescar cartera
+          {refreshMany.isPending ? 'Refrescando...' : 'Refrescar precios'}
         </button>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>ISIN</th>
-            <th>Nombre</th>
-            <th>Entidad</th>
-            <th>Modalidad</th>
-            <th>Participaciones</th>
-            <th>Aportado</th>
-            <th>NAV</th>
-            <th>Fecha NAV</th>
-            <th>Valor actual</th>
-            <th>Rent. %</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.funds.length ? (
-            data.funds.map((fund) => (
+      <div className="table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Fondo</th>
+              <th>ISIN</th>
+              <th>Entidad</th>
+              <th>Participaciones</th>
+              <th>Invertido</th>
+              <th>VL</th>
+              <th>Valor</th>
+              <th>Rent.</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(data?.funds ?? []).map((fund) => (
               <tr key={fund.id}>
+                <td>
+                  <div className="cell-main">
+                    <strong>{fund.fundName}</strong>
+                    <span>{fund.managementCompany || 'Sin gestora'}</span>
+                  </div>
+                </td>
                 <td>{fund.isin}</td>
-                <td>{fund.fundName}</td>
                 <td>{fund.platformEntity}</td>
-                <td>{fund.contractMode}</td>
                 <td>{fund.shares}</td>
                 <td>{formatCurrency(fund.investedAmount)}</td>
-                <td>{fund.latestNav ?? '—'}</td>
-                <td>{fund.latestNavDate ?? '—'}</td>
+                <td>{fund.latestNav !== null ? formatCurrency(fund.latestNav) : '—'}</td>
                 <td>{formatCurrency(fund.marketValue)}</td>
                 <td>{formatPercent(fund.returnPct)}</td>
-                <td>{fund.priceStatus}</td>
+                <td>
+                  <span className={`status-badge status-${fund.priceStatus || 'unknown'}`}>
+                    {fund.priceStatus || 'unknown'}
+                  </span>
+                </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={11} className="empty-cell">
-                Todavía no hay fondos cargados.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+            ))}
+
+            {!data?.funds?.length && (
+              <tr>
+                <td colSpan={9}>
+                  <div className="empty-row">Todavía no hay fondos cargados.</div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
