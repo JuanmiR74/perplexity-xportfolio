@@ -344,3 +344,137 @@ input:focus {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+}
+
+.auth-card {
+  width: min(100%, 460px);
+  padding: var(--space-8);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.auth-top {
+  margin-bottom: var(--space-5);
+}
+
+.auth-top h1 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-xl);
+  line-height: 1.1;
+}
+
+.auth-copy {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.auth-switch {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  padding: var(--space-1);
+  background: var(--color-surface-offset);
+  border-radius: 0.9rem;
+}
+
+.auth-switch__button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.auth-switch__button.is-active {
+  background: white;
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.auth-submit {
+  min-width: 160px;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--color-bg) 86%, white);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.app-header__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.9rem var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brand-lockup p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.brand-mark {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.8rem;
+  display: grid;
+  place-items: center;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.brand-mark svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.header-user__meta {
+  display: grid;
+  gap: 0.15rem;
+  text-align: right;
+}
+
+.header-user__meta span {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 720px) {
+  .app-header__inner,
+  .header-user {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-user__meta {
+    text-align: left;
+  }
+}
