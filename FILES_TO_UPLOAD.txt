@@ -1,0 +1,16 @@
+.env
+.env.example
+.gitignore
+README.md
+index.html
+package.json
+src/App.tsx
+src/lib/supabase.ts
+src/main.tsx
+src/styles.css
+supabase/schema.sql
+tsconfig.app.json
+tsconfig.json
+tsconfig.node.json
+vercel.json
+vite.config.ts
