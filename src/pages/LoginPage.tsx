@@ -1,61 +1,57 @@
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
-export function LoginPage() {
+export default function LoginPage() {
   const navigate = useNavigate();
   const { signIn, signUp } = useAuth();
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const onSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    setBusy(true);
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
     try {
-      if (mode === 'signin') {
-        await signIn(email, password);
-        toast.success('Sesión iniciada');
-        navigate('/');
-      } else {
-        await signUp(email, password);
-        toast.success('Cuenta creada. Revisa tu email si tienes confirmación activada.');
+      const action = mode === 'login' ? signIn : signUp;
+      const result = await action(email, password);
+      if (result.error) {
+        setError(result.error);
+        return;
       }
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Error de autenticación');
+      navigate('/');
     } finally {
-      setBusy(false);
+      setLoading(false);
     }
   };
 
   return (
-    <main className="auth-page">
-      <section className="auth-card">
-        <div>
-          <p className="eyebrow">FondoRadar</p>
-          <h1>Controla tu cartera de fondos</h1>
-          <p className="muted">Acceso personal o familiar con autenticación segura.</p>
+    <main className="min-h-screen flex items-center justify-center p-6">
+      <form onSubmit={onSubmit} className="w-full max-w-md space-y-4 rounded-xl border p-6">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold">Acceso</h1>
+          <p className="text-sm opacity-70">Inicia sesión o crea una cuenta.</p>
         </div>
-        <div className="auth-switch">
-          <button className={mode === 'signin' ? 'active' : ''} onClick={() => setMode('signin')}>Entrar</button>
-          <button className={mode === 'signup' ? 'active' : ''} onClick={() => setMode('signup')}>Crear cuenta</button>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => setMode('login')} className="px-3 py-2 rounded-md border">Entrar</button>
+          <button type="button" onClick={() => setMode('register')} className="px-3 py-2 rounded-md border">Registrar</button>
         </div>
-        <form onSubmit={onSubmit} className="form-stack">
-          <label>
-            Email
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </label>
-          <label>
-            Contraseña
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
-          </label>
-          <button className="btn btn-primary" disabled={busy} type="submit">
-            {busy ? 'Procesando...' : mode === 'signin' ? 'Entrar' : 'Crear cuenta'}
-          </button>
-        </form>
-      </section>
+        <label className="block">
+          <span className="block text-sm mb-1">Email</span>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required className="w-full rounded-md border px-3 py-2" />
+        </label>
+        <label className="block">
+          <span className="block text-sm mb-1">Contraseña</span>
+          <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required minLength={6} className="w-full rounded-md border px-3 py-2" />
+        </label>
+        {error ? <p className="text-sm text-red-600">{error}</p> : null}
+        <button disabled={loading} type="submit" className="w-full rounded-md bg-black px-4 py-2 text-white disabled:opacity-60">
+          {loading ? 'Procesando...' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
+        </button>
+      </form>
     </main>
   );
 }
