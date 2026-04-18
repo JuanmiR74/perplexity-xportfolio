@@ -1,53 +1,114 @@
-import { Pie, PieChart, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useMemo } from 'react';
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { usePortfolio } from '../../hooks/usePortfolio';
 
-const COLORS = ['#01696f', '#5591c7', '#e8af34', '#6daa45', '#d163a7', '#bb653b'];
+type Slice = {
+  name: string;
+  value: number;
+};
 
-export function XRayPanel() {
-  const { data } = usePortfolio();
-  const geography = aggregate(data?.funds ?? [], 'geography');
+const COLORS = ['#01696f', '#437a22', '#006494', '#d19900', '#a13544', '#7a39bb'];
 
+function aggregateByKey(
+  funds: Array<{
+    marketValue: number | null;
+    xray: {
+      assetType: Array<{ name: string; weight: number }>;
+      sectors: Array<{ name: string; weight: number }>;
+      geography: Array<{ name: string; weight: number }>;
+    };
+  }>,
+  dimension: 'assetType' | 'sectors' | 'geography'
+): Slice[] {
+  const map = new Map<string, number>();
+
+  funds.forEach((fund) => {
+    const base = fund.marketValue ?? 0;
+    fund.xray[dimension].forEach((item) => {
+      const current = map.get(item.name) ?? 0;
+      map.set(item.name, current + base * (item.weight / 100));
+    });
+  });
+
+  return [...map.entries()]
+    .map(([name, value]) => ({ name, value }))
+    .filter((item) => item.value > 0)
+    .sort((a, b) => b.value - a.value);
+}
+
+function ChartBlock({ title, data }: { title: string; data: Slice[] }) {
   return (
-    <div className="xray-grid">
-      <article className="section-subcard chart-card">
-        <h3>Geografía</h3>
-        <div className="chart-box">
-          <ResponsiveContainer width="100%" height={260}>
+    <article className="panel">
+      <div className="panel-header">
+        <div>
+          <h2>{title}</h2>
+          <p>Distribución agregada de la cartera.</p>
+        </div>
+      </div>
+
+      <div className="chart-box">
+        {data.length ? (
+          <ResponsiveContainer width="100%" height={280}>
             <PieChart>
-              <Pie data={geography} dataKey="value" nameKey="name" outerRadius={90}>
-                {geography.map((entry, index) => (
+              <Pie
+                data={data}
+                innerRadius={70}
+                outerRadius={105}
+                paddingAngle={2}
+                dataKey="value"
+                nameKey="name"
+              >
+                {data.map((entry, index) => (
                   <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip formatter={(value: number) => value.toFixed(2)} />
             </PieChart>
           </ResponsiveContainer>
-        </div>
-      </article>
+        ) : (
+          <div className="empty-row">Sin datos X-Ray todavía.</div>
+        )}
+      </div>
 
-      <article className="section-subcard">
-        <h3>Dimensiones v1</h3>
-        <p className="muted">
-          La pestaña X-Ray queda conectada a los datos persistidos y lista para
-          ampliar con filtros y más gráficos.
-        </p>
-      </article>
-    </div>
+      <div className="legend-list">
+        {data.slice(0, 8).map((item, index) => (
+          <div className="legend-item" key={item.name}>
+            <span
+              className="legend-dot"
+              style={{ backgroundColor: COLORS[index % COLORS.length] }}
+            />
+            <span>{item.name}</span>
+            <strong>{item.value.toFixed(2)} €</strong>
+          </div>
+        ))}
+      </div>
+    </article>
   );
 }
 
-function aggregate(funds: any[], key: 'geography' | 'sectors' | 'assetType') {
-  const map = new Map<string, number>();
+export function XRayPanel() {
+  const { data } = usePortfolio();
 
-  for (const fund of funds) {
-    const base = fund.marketValue ?? fund.investedAmount ?? 0;
-    for (const item of fund.xray?.[key] ?? []) {
-      map.set(item.category, (map.get(item.category) ?? 0) + (base * item.weightPct) / 100);
-    }
-  }
+  const assetTypeData = useMemo(
+    () => aggregateByKey(data?.funds ?? [], 'assetType'),
+    [data?.funds]
+  );
 
-  return Array.from(map.entries()).map(([name, value]) => ({
-    name,
-    value: Number(value.toFixed(2)),
-  }));
+  const sectorsData = useMemo(
+    () => aggregateByKey(data?.funds ?? [], 'sectors'),
+    [data?.funds]
+  );
+
+  const geographyData = useMemo(
+    () => aggregateByKey(data?.funds ?? [], 'geography'),
+    [data?.funds]
+  );
+
+  return (
+    <section className="xray-grid">
+      <ChartBlock title="X-Ray · Tipo de activo" data={assetTypeData} />
+      <ChartBlock title="X-Ray · Sectores" data={sectorsData} />
+      <ChartBlock title="X-Ray · Geografía" data={geographyData} />
+    </section>
+  );
 }
