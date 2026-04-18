@@ -1,39 +1,49 @@
-import { AppShell } from '../components/layout/AppShell';
 import { PortfolioSummary } from '../components/dashboard/PortfolioSummary';
+import { FundForm } from '../components/funds/FundForm';
 import { FundsTable } from '../components/funds/FundsTable';
+import { RoboAdvisorForm } from '../components/robo/RoboAdvisorForm';
 import { XRayPanel } from '../components/xray/XRayPanel';
-import { usePortfolio } from '../hooks/usePortfolio';
 
-export function DashboardPage() {
-  const { isLoading, error } = usePortfolio();
-
+export default function DashboardPage() {
   return (
-    <AppShell>
-      <PortfolioSummary />
-
-      {isLoading && (
-        <div className="section-card">
-          <p>Cargando cartera...</p>
-        </div>
-      )}
-
-      {error && (
-        <div className="section-card">
-          <p>No se pudieron cargar los datos.</p>
-        </div>
-      )}
-
-      <section className="tabs-panel">
-        <div className="section-card">
-          <h2>Fondos y roboadvisors</h2>
-          <FundsTable />
-        </div>
-
-        <div className="section-card">
-          <h2>X-Ray</h2>
-          <XRayPanel />
+    <main className="dashboard-shell">
+      <section className="hero-block">
+        <div>
+          <p className="eyebrow">FondoRadar</p>
+          <h1>Control manual de cartera con auth y Supabase</h1>
+          <p className="hero-copy">
+            Base v1 orientada a fondos y roboadvisors, con refresco manual de precios y
+            estructura preparada para crecer.
+          </p>
         </div>
       </section>
-    </AppShell>
+
+      <PortfolioSummary />
+
+      <section className="two-col">
+        <article className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Nuevo fondo</h2>
+              <p>Alta manual de posiciones para el usuario autenticado.</p>
+            </div>
+          </div>
+          <FundForm />
+        </article>
+
+        <article className="panel">
+          <div className="panel-header">
+            <div>
+              <h2>Nuevo roboadvisor</h2>
+              <p>Alta manual del contenedor gestionado.</p>
+            </div>
+          </div>
+          <RoboAdvisorForm />
+        </article>
+      </section>
+
+      <FundsTable />
+      <XRayPanel />
+    </main>
   );
 }
