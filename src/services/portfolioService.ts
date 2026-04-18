@@ -48,7 +48,12 @@ export async function loadPortfolio(userId: string): Promise<PortfolioPayload> {
   const gainLoss = marketValueTotal - investedTotal;
   const gainLossPct = investedTotal > 0 ? (gainLoss / investedTotal) * 100 : null;
   const unavailableCount = funds.filter((item) => item.priceStatus === 'unavailable').length;
-  const lastUpdated = funds.map((item) => item.latestNavDate).filter(Boolean).sort().at(-1) ?? null;
+ const navDates = funds
+  .map((item) => item.latestNavDate)
+  .filter((value): value is string => Boolean(value))
+  .sort();
+
+const lastUpdated = navDates.length ? navDates[navDates.length - 1] : null;
 
   return {
     funds,
