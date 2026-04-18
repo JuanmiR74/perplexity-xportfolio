@@ -6,7 +6,7 @@ import {
   refreshFundsByIsin,
   updateFundPosition,
 } from '../services/portfolioService';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from './useAuth';
 import type { FundPosition, RoboAdvisor } from '../types/portfolio';
 
 export function usePortfolio() {
