@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { LogOut, Radar } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, signOut } = useAuth();
