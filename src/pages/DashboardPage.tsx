@@ -11,198 +11,47 @@ const positions = [
 
 export default function DashboardPage() {
   const { user, signOut } = useAuth();
-
   return (
-    <div className='app-shell'>
-      <header className='sticky top-0 z-20 border-b bg-background/85 backdrop-blur'>
-        <div className='container flex h-16 items-center justify-between'>
+    <div className='min-h-screen bg-slate-50 text-slate-900'>
+      <header className='sticky top-0 z-20 border-b border-slate-200 bg-white/85 backdrop-blur'>
+        <div className='mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center gap-3'>
-            <div className='flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-card'>
-              <Wallet className='h-5 w-5' />
-            </div>
-            <div>
-              <p className='text-sm font-semibold tracking-tight'>FondoRadar</p>
-              <p className='text-xs text-muted-foreground'>Vista consolidada de patrimonio</p>
-            </div>
+            <div className='flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-sm'><Wallet className='h-5 w-5' /></div>
+            <div><p className='text-sm font-semibold tracking-tight'>FondoRadar</p><p className='text-xs text-slate-500'>Vista consolidada de patrimonio</p></div>
           </div>
-          <div className='flex items-center gap-3'>
-            <div className='hidden text-right sm:block'>
-              <p className='text-sm font-medium'>{user?.email ?? 'Usuario'}</p>
-              <p className='text-xs text-muted-foreground'>Cuenta autenticada</p>
-            </div>
-            <Button variant='outline' onClick={() => signOut()}>
-              Salir
-            </Button>
-          </div>
+          <div className='flex items-center gap-3'><div className='hidden text-right sm:block'><p className='text-sm font-medium'>{user?.email ?? 'Usuario'}</p><p className='text-xs text-slate-500'>Cuenta autenticada</p></div><Button variant='outline' onClick={() => signOut()}>Salir</Button></div>
         </div>
       </header>
-
-      <main className='container py-8 md:py-10'>
-        <section className='relative overflow-hidden rounded-[28px] border bg-hero-grid bg-hero-grid p-6 shadow-soft md:p-10'>
-          <div className='absolute inset-0 bg-gradient-to-br from-white/65 via-white/40 to-transparent dark:from-slate-950/40 dark:via-slate-950/10 dark:to-transparent' />
-          <div className='relative page-header'>
+      <main className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
+        <section className='relative overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm md:p-10'>
+          <div className='absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-transparent' />
+          <div className='relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between'>
             <div className='max-w-2xl space-y-3'>
-              <span className='inline-flex items-center gap-2 rounded-full border bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground'>
-                <ShieldCheck className='h-3.5 w-3.5 text-primary' />
-                Snapshot manual · arquitectura v1
-              </span>
-              <div className='space-y-2'>
-                <h1 className='text-3xl font-bold tracking-tight md:text-5xl'>Tu patrimonio en una sola pantalla</h1>
-                <p className='max-w-xl text-sm leading-6 text-muted-foreground md:text-base'>
-                  Un panel limpio para consolidar fondos, roboadvisors y liquidez, con una lectura clara del total invertido,
-                  distribución y evolución de cada bloque.
-                </p>
-              </div>
+              <span className='inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600'><ShieldCheck className='h-3.5 w-3.5 text-blue-600' /> Snapshot manual · arquitectura v1</span>
+              <div className='space-y-2'><h1 className='text-3xl font-bold tracking-tight md:text-5xl'>Tu patrimonio en una sola pantalla</h1><p className='max-w-xl text-sm leading-6 text-slate-600 md:text-base'>Un panel limpio para consolidar fondos, roboadvisors y liquidez, con lectura clara del total invertido, distribución y evolución.</p></div>
             </div>
-            <div className='flex flex-wrap gap-3'>
-              <Button size='lg'>Actualizar posiciones</Button>
-              <Button size='lg' variant='secondary'>Añadir fondo</Button>
-            </div>
+            <div className='flex flex-wrap gap-3'><Button size='lg'>Actualizar posiciones</Button><Button size='lg' variant='secondary'>Añadir fondo</Button></div>
           </div>
         </section>
-
         <section className='mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4'>
-          <article className='metric-card'>
-            <p className='metric-label'>Patrimonio total</p>
-            <p className='metric-value'>87.570 €</p>
-            <p className='mt-2 text-sm text-emerald-600'>+2.140 € este mes</p>
-          </article>
-          <article className='metric-card'>
-            <p className='metric-label'>Fondos monitorizados</p>
-            <p className='metric-value'>14</p>
-            <p className='mt-2 text-sm text-muted-foreground'>9 fondos · 2 carteras · 3 cuentas</p>
-          </article>
-          <article className='metric-card'>
-            <p className='metric-label'>Rentabilidad YTD</p>
-            <p className='metric-value'>+6,4%</p>
-            <p className='mt-2 text-sm text-emerald-600'>Perfil equilibrado</p>
-          </article>
-          <article className='metric-card'>
-            <p className='metric-label'>Nivel de diversificación</p>
-            <p className='metric-value'>Alta</p>
-            <p className='mt-2 text-sm text-muted-foreground'>Exposición global por activo y región</p>
-          </article>
+          {[['Patrimonio total','87.570 €','+2.140 € este mes'],['Fondos monitorizados','14','9 fondos · 2 carteras · 3 cuentas'],['Rentabilidad YTD','+6,4%','Perfil equilibrado'],['Diversificación','Alta','Exposición global por activo y región']].map(([label,value,meta]) => (<article key={label} className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'><p className='text-sm font-medium text-slate-500'>{label}</p><p className='mt-2 text-3xl font-bold tracking-tight'>{value}</p><p className='mt-2 text-sm text-slate-600'>{meta}</p></article>))}
         </section>
-
         <section className='mt-8 grid gap-6 xl:grid-cols-[1.4fr_0.9fr]'>
-          <article className='section-card'>
-            <div className='page-header'>
-              <div>
-                <h2 className='section-title'>Posiciones principales</h2>
-                <p className='section-subtitle'>Lectura rápida del peso de cada bloque patrimonial</p>
-              </div>
-              <Button variant='ghost'>Ver detalle completo</Button>
-            </div>
+          <article className='rounded-2xl border border-slate-200 bg-white p-6 shadow-sm'>
+            <div className='flex items-center justify-between gap-4'><div><h2 className='text-lg font-semibold tracking-tight'>Posiciones principales</h2><p className='text-sm text-slate-500'>Lectura rápida del peso de cada bloque patrimonial</p></div><Button variant='ghost'>Ver detalle completo</Button></div>
             <div className='mt-6 space-y-3'>
-              {positions.map((item) => (
-                <div key={item.name} className='flex flex-col gap-4 rounded-2xl border bg-background/70 p-4 md:flex-row md:items-center md:justify-between'>
-                  <div className='space-y-1'>
-                    <p className='font-semibold'>{item.name}</p>
-                    <p className='text-sm text-muted-foreground'>{item.type}</p>
-                  </div>
-                  <div className='flex items-center gap-8'>
-                    <div>
-                      <p className='text-xs uppercase tracking-wide text-muted-foreground'>Valor</p>
-                      <p className='font-semibold'>{item.value}</p>
-                    </div>
-                    <div>
-                      <p className='text-xs uppercase tracking-wide text-muted-foreground'>Peso</p>
-                      <p className='font-semibold'>{item.allocation}</p>
-                    </div>
-                    <div>
-                      <p className='text-xs uppercase tracking-wide text-muted-foreground'>Cambio</p>
-                      <p className='font-semibold text-emerald-600'>{item.change}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              {positions.map((item) => (<div key={item.name} className='flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:flex-row md:items-center md:justify-between'><div className='space-y-1'><p className='font-semibold'>{item.name}</p><p className='text-sm text-slate-500'>{item.type}</p></div><div className='flex items-center gap-8'><div><p className='text-xs uppercase tracking-wide text-slate-500'>Valor</p><p className='font-semibold'>{item.value}</p></div><div><p className='text-xs uppercase tracking-wide text-slate-500'>Peso</p><p className='font-semibold'>{item.allocation}</p></div><div><p className='text-xs uppercase tracking-wide text-slate-500'>Cambio</p><p className='font-semibold text-emerald-600'>{item.change}</p></div></div></div>))}
             </div>
           </article>
-
-          <article className='section-card'>
-            <div>
-              <h2 className='section-title'>Distribución objetivo</h2>
-              <p className='section-subtitle'>Diseño preparado para añadir el X-Ray real después</p>
-            </div>
-            <div className='mt-6 space-y-4'>
-              {[
-                ['Renta variable', '58%'],
-                ['Renta fija', '24%'],
-                ['Liquidez', '11%'],
-                ['Alternativos', '7%'],
-              ].map(([label, value]) => (
-                <div key={label} className='space-y-2'>
-                  <div className='flex items-center justify-between text-sm'>
-                    <span className='text-muted-foreground'>{label}</span>
-                    <span className='font-semibold'>{value}</span>
-                  </div>
-                  <div className='h-2 rounded-full bg-secondary'>
-                    <div className='h-2 rounded-full bg-primary' style={{ width: value }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className='mt-8 grid gap-3 sm:grid-cols-2'>
-              <div className='rounded-2xl border bg-background/70 p-4'>
-                <div className='mb-2 flex items-center gap-2'>
-                  <PieChart className='h-4 w-4 text-primary' />
-                  <p className='text-sm font-medium'>Exposición</p>
-                </div>
-                <p className='text-sm text-muted-foreground'>Listo para conectar Morningstar, ETF data o tu motor manual.</p>
-              </div>
-              <div className='rounded-2xl border bg-background/70 p-4'>
-                <div className='mb-2 flex items-center gap-2'>
-                  <Landmark className='h-4 w-4 text-primary' />
-                  <p className='text-sm font-medium'>Cuentas</p>
-                </div>
-                <p className='text-sm text-muted-foreground'>Bloque preparado para custodios, brokers y liquidez.</p>
-              </div>
-            </div>
+          <article className='rounded-2xl border border-slate-200 bg-white p-6 shadow-sm'>
+            <div><h2 className='text-lg font-semibold tracking-tight'>Distribución objetivo</h2><p className='text-sm text-slate-500'>Diseño preparado para añadir el X-Ray real después</p></div>
+            <div className='mt-6 space-y-4'>{[['Renta variable','58%'],['Renta fija','24%'],['Liquidez','11%'],['Alternativos','7%']].map(([label,value]) => (<div key={label} className='space-y-2'><div className='flex items-center justify-between text-sm'><span className='text-slate-500'>{label}</span><span className='font-semibold'>{value}</span></div><div className='h-2 rounded-full bg-slate-200'><div className='h-2 rounded-full bg-blue-600' style={{ width: value }} /></div></div>))}</div>
+            <div className='mt-8 grid gap-3 sm:grid-cols-2'><div className='rounded-2xl border border-slate-200 bg-slate-50 p-4'><div className='mb-2 flex items-center gap-2'><PieChart className='h-4 w-4 text-blue-600' /><p className='text-sm font-medium'>Exposición</p></div><p className='text-sm text-slate-600'>Listo para conectar Morningstar, ETF data o tu motor manual.</p></div><div className='rounded-2xl border border-slate-200 bg-slate-50 p-4'><div className='mb-2 flex items-center gap-2'><Landmark className='h-4 w-4 text-blue-600' /><p className='text-sm font-medium'>Cuentas</p></div><p className='text-sm text-slate-600'>Bloque preparado para custodios, brokers y liquidez.</p></div></div>
           </article>
         </section>
-
         <section className='mt-8 grid gap-6 lg:grid-cols-3'>
-          <article className='section-card lg:col-span-2'>
-            <div className='page-header'>
-              <div>
-                <h2 className='section-title'>Próximos pasos de producto</h2>
-                <p className='section-subtitle'>Base visual lista para evolucionar a una app operativa</p>
-              </div>
-            </div>
-            <div className='mt-6 grid gap-4 md:grid-cols-3'>
-              {[
-                'Alta y edición de posiciones con validación',
-                'Cálculo consolidado de coste, valor y plusvalía',
-                'X-Ray por activo, región, sector y divisa',
-              ].map((text) => (
-                <div key={text} className='rounded-2xl border bg-background/70 p-4'>
-                  <div className='mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary'>
-                    <ArrowUpRight className='h-4 w-4' />
-                  </div>
-                  <p className='text-sm font-medium leading-6'>{text}</p>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className='section-card'>
-            <h2 className='section-title'>Estado del sistema</h2>
-            <p className='section-subtitle mt-1'>Vista preparada para entorno real</p>
-            <div className='mt-6 space-y-4'>
-              <div className='rounded-2xl border bg-background/70 p-4'>
-                <p className='text-sm text-muted-foreground'>Auth</p>
-                <p className='mt-1 font-semibold text-emerald-600'>Operativa</p>
-              </div>
-              <div className='rounded-2xl border bg-background/70 p-4'>
-                <p className='text-sm text-muted-foreground'>Tema visual</p>
-                <p className='mt-1 font-semibold'>Aplicado</p>
-              </div>
-              <div className='rounded-2xl border bg-background/70 p-4'>
-                <p className='text-sm text-muted-foreground'>Datos reales</p>
-                <p className='mt-1 font-semibold text-amber-600'>Pendiente de integrar</p>
-              </div>
-            </div>
-          </article>
+          <article className='rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2'><div><h2 className='text-lg font-semibold tracking-tight'>Próximos pasos de producto</h2><p className='text-sm text-slate-500'>Base visual lista para evolucionar a una app operativa</p></div><div className='mt-6 grid gap-4 md:grid-cols-3'>{['Alta y edición de posiciones con validación','Cálculo consolidado de coste, valor y plusvalía','X-Ray por activo, región, sector y divisa'].map((text)=>(<div key={text} className='rounded-2xl border border-slate-200 bg-slate-50 p-4'><div className='mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600'><ArrowUpRight className='h-4 w-4' /></div><p className='text-sm font-medium leading-6'>{text}</p></div>))}</div></article>
+          <article className='rounded-2xl border border-slate-200 bg-white p-6 shadow-sm'><h2 className='text-lg font-semibold tracking-tight'>Estado del sistema</h2><p className='mt-1 text-sm text-slate-500'>Vista preparada para entorno real</p><div className='mt-6 space-y-4'><div className='rounded-2xl border border-slate-200 bg-slate-50 p-4'><p className='text-sm text-slate-500'>Auth</p><p className='mt-1 font-semibold text-emerald-600'>Operativa</p></div><div className='rounded-2xl border border-slate-200 bg-slate-50 p-4'><p className='text-sm text-slate-500'>Tema visual</p><p className='mt-1 font-semibold'>Aplicado</p></div><div className='rounded-2xl border border-slate-200 bg-slate-50 p-4'><p className='text-sm text-slate-500'>Datos reales</p><p className='mt-1 font-semibold text-amber-600'>Pendiente de integrar</p></div></div></article>
         </section>
       </main>
     </div>
