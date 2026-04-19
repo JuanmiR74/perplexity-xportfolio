@@ -5,7 +5,7 @@ import { Toaster as Sonner } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import Index from './pages/Index';
+import Index from './pages/DashboardPage';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 
@@ -25,7 +25,7 @@ export default function App() {
                 path="/"
                 element={
                   <ProtectedRoute>
-                    <Index />
+                    <DashboardPage />
                   </ProtectedRoute>
                 }
               />
